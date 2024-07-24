@@ -8,16 +8,16 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
 
-    # portfolios = db.relationship('Portfolio', backref='user', lazy=True)
-    # transactions = db.relationship('TransactionHistory', backref='user', lazy=True)
-    # cash = db.Column(db.Float, nullable=False)
-    # value = db.Column(db.Float, nullable=False)
-    # revenue = db.Column(db.Float, nullable=False)
+    portfolios = db.relationship('Portfolio', backref='user', lazy=True, cascade="all, delete-orphan")
+    transactions = db.relationship('TransactionHistory', backref='user', lazy=True, cascade="all, delete-orphan")
+    cash = db.Column(db.Float, default=5000, nullable=False)
+    value = db.Column(db.Float, default=0, nullable=False)
+    revenue = db.Column(db.Float, default=0, nullable=False)
 
     def __repr__(self): 
         return '<Username %r>' % self.username
     
-'''
+
 class Portfolio(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -36,4 +36,4 @@ class TransactionHistory(db.Model):
     price = db.Column(db.Float, nullable=False)
     revenue = db.Column(db.Float, nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
-'''    
+   

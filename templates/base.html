@@ -10,7 +10,12 @@
 </head>
 <body>
     <h1>Header</h1>
-    <input type="text" placeholder='search'>
+    <h1>Search for Stocks here</h1>
+    <form action="{{ url_for('search_stock') }}" method='POST'>
+        <label for="stock_symbol">Stock Symbol: </label>
+        <input type="text" id='stock_symbol' name='stock_symbol' required>
+        <button type='submit'>Search</button>
+    </form>
     {% block content %}
         
     {% endblock %}
