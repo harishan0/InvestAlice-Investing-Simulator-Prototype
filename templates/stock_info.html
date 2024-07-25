@@ -14,5 +14,7 @@
     <p>52 Week High: {{ stock_info['52_week_high'] }}</p>
     <p>52 Week Low: {{ stock_info['52_week_low'] }}</p>
     <p>Market Cap: {{ stock_info['market_cap'] }}</p>
+    <a method='GET' href="{{ url_for('buystock', stock_price=stock_info['current_price'], ticker=stock_info['symbol']) }}">Buy Stock</a>
+    <a method='GET' href="{{ url_for('sellstock', stock_price=stock_info['current_price'], ticker=stock_info['symbol']) }}">Sell Stock</a>
 {% endif %}
 {% endblock %}

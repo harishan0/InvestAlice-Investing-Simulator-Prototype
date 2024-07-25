@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Stock Information: </h1>
+
+<p>How much of this stock would you like to buy</p>
+<p>{{ ticker }}: {{ price }}</p>
+<form action="" method='POST'>
+    {{ form.hidden_tag() }}
+    {{ form.shares }}
+    {{ form.submit }}
+</form>
+
+{% endblock content %}
