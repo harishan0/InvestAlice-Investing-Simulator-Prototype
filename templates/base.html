@@ -9,13 +9,25 @@
     {% endblock %}
 </head>
 <body>
-    <h1>Header</h1>
-    <h1>Search for Stocks here</h1>
-    <form action="{{ url_for('search_stock') }}" method='POST'>
-        <label for="stock_symbol">Stock Symbol: </label>
-        <input type="text" id='stock_symbol' name='stock_symbol' required>
-        <button type='submit'>Search</button>
-    </form>
+    <div name='header'>
+        <a href="{{ url_for('home')}}">Home</a>
+        {% if current_user.is_authenticated %}
+            <a href="{{url_for('logout')}}">Logout</a>
+            <a href="{{ url_for('transaction_history')}}">Transaction History</a>
+        {% else %}
+            <a href="{{ url_for('login')}}">Login</a>
+            <a href="{{ url_for('register')}}">Register</a>
+        {% endif %}
+    </div>
+    {% if current_user.is_authenticated %}
+        <h1>Search for Stocks here</h1>
+        <form action="{{ url_for('search_stock') }}" method='POST'>
+            <label for="stock_symbol">Stock Symbol: </label>
+            <input type="text" id='stock_symbol' name='stock_symbol' required>
+            <button type='submit'>Search</button>
+        </form>
+    {% endif %}
+    
     {% block content %}
         
     {% endblock %}

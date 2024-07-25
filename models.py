@@ -12,6 +12,7 @@ class User(UserMixin, db.Model):
     transactions = db.relationship('Transaction', backref='owner', lazy=True, cascade="all, delete-orphan")
 
     cash = db.Column(db.Float, default=5000, nullable=False)
+    # total value coming from all stocks 
     value = db.Column(db.Float, default=0, nullable=False)
     revenue = db.Column(db.Float, default=0, nullable=False)
 
@@ -24,7 +25,6 @@ class Stock(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     stock = db.Column(db.String(20), nullable=False)
     shares = db.Column(db.Integer, nullable=False)
-    purchasePrice = db.Column(db.Float, nullable=False)
     currentPrice = db.Column(db.Float, nullable=False)
     totalValue = db.Column(db.Float, nullable=False)
 

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+{% if current_user.is_authenticated %}
+    <p>Here is your transaction history</p>
+    <table>
+        <tr>
+            <th>BUY/SELL</th>
+            <th>STOCK</th>
+            <th>PRICE</th>
+            <th>SHARES</th>
+            <th>REVENUE</th>
+            <th>DATE</th>
+        </tr>
+        {% for transaction in history %}
+            <tr>
+                <td>{{ transaction.type }}</td>
+                <td>{{ transaction.stock }}</td>
+                <td>{{ transaction.price }}</td>
+                <td>{{ transaction.shares }}</td>
+                <td>{{ transaction.revenue }}</td>
+                <td>{{ transaction.date }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+{% endblock content %}

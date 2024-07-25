@@ -7,9 +7,25 @@
 {% block content %}
 {% if current_user.is_authenticated %}
     <h1>Hello {{ current_user.username }} you are logged in</h1>
-    <a href="{{url_for('logout')}}">Press here to logout</a>
-{% else %}
-    <a href="{{ url_for('login')}}">Login</a>
-    <a href="{{ url_for('register')}}">Register</a>
+    
+    <p>Here is your portfolio</p>
+    <table>
+        <tr>
+            <th>STOCK</th>
+            <th>SHARES</th>
+            <th>PRICE</th>
+            <th>REVENUE</th>
+        </tr>
+        {% for stock in portfolio %}
+            <tr>
+                <td>{{ stock.stock }}</td>
+                <td>{{ stock.shares }}</td>
+                <td>{{ stock.currentPrice }}</td>
+                <td>{{ stock.totalValue }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p>CASH -- VALUE OF STOCKS -- REVENUE</p>
+    <p>{{current_user.cash}} -- {{current_user.value}} -- {{current_user.revenue}}</p>
 {% endif %}
 {% endblock %}
