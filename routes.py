@@ -23,7 +23,7 @@ def home():
 
 
 
-
+'''
 def search_to_ticker(search): 
     API_KEY = 'cqgl859r01qompnrfvs0cqgl859r01qompnrfvsg'
     base_url = 'https://finnhub.io/api/v1/stock/symbol'
@@ -32,37 +32,45 @@ def search_to_ticker(search):
         'exchange': 'US', 
         'token': API_KEY
     }
+    try: 
+        response = requests.get(base_url, params=params)
+        data = response.json()
 
-    response = requests.get(base_url, params=params)
-    data = response.json()
-
-    for symbol in data: 
-        if search.lower() in symbol['description'].lower(): 
-            return symbol['symbol']
-        
-    return 'No matches found'
+        for symbol in data: 
+            if search.lower() in symbol['description'].lower(): 
+                return symbol['symbol']
+    except: 
+        return render_template('search_error.html') 
+'''
 
 @app.route('/search-stock', methods=['GET', 'POST'])
 def search_stock(): 
     stock_info = None
     if request.method == 'POST': 
-        search = request.form['stock_symbol']
+        stock_symbol = request.form['stock_symbol'].upper()
 
-        stock_symbol = search_to_ticker(search).upper()
-    
-
-        if stock_symbol == 'NO MATCHES FOUND': 
-            return render_template('search_error.html')
+        # stock_symbol = search_to_ticker(search).upper()
+        # if stock_symbol == 'NO MATCHES FOUND': 
+        #     return render_template('search_error.html')
+        
+        
         stock = yf.Ticker(stock_symbol)
-
-        stock_info = {
-            'symbol': stock_symbol, 
-            'current_price': stock.info['currentPrice'],
-            '52_week_high': stock.info['fiftyTwoWeekHigh'], 
-            '52_week_low': stock.info['fiftyTwoWeekLow'], 
-            'market_cap': stock.info['marketCap']
-        }
-    return render_template('index.html', stock_info=stock_info)
+        info = stock.info
+        try: 
+            if 'symbol' in info and info['symbol'] == stock_symbol.upper(): 
+                stock_info = {
+                    'symbol': stock_symbol, 
+                    'current_price': info['currentPrice'],
+                    '52_week_high': info['fiftyTwoWeekHigh'], 
+                    '52_week_low': info['fiftyTwoWeekLow'], 
+                    'market_cap': info['marketCap']
+                }
+            else: 
+                return render_template('search_error.html')
+        except Exception as e: 
+            return render_template('search_error.html')
+        
+    return render_template('stock_info.html', stock_info=stock_info)
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():

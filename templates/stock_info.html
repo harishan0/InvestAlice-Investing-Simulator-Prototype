@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+<h1>Stock Information: </h1>
+
+{% if stock_info %}
+    <h2>Stock Information</h2>
+    <p>Symbol: {{ stock_info['symbol'] }}</p>
+    <p>Current Price: {{ stock_info['current_price'] }}</p>
+    <p>52 Week High: {{ stock_info['52_week_high'] }}</p>
+    <p>52 Week Low: {{ stock_info['52_week_low'] }}</p>
+    <p>Market Cap: {{ stock_info['market_cap'] }}</p>
+{% endif %}
+{% endblock %}
