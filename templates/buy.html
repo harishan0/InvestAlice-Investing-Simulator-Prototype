@@ -6,6 +6,7 @@
 <p>How much of this stock would you like to buy</p>
 <p>{{ ticker }}: {{ price }}</p>
 <p>Number of shares: {{ num_shares }}</p>
+<p>Cash available: {{ current_user.cash | round(2)}}</p>
 <form action="" method='POST'>
     {{ form.hidden_tag() }}
     {{ form.shares }}

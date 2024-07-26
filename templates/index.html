@@ -4,6 +4,8 @@
 
 {% endblock %}
 
+
+
 {% block content %}
 {% if current_user.is_authenticated %}
     <h1>Hello {{ current_user.username }} you are logged in</h1>
@@ -20,12 +22,12 @@
             <tr>
                 <td>{{ stock.stock }}</td>
                 <td>{{ stock.shares }}</td>
-                <td>{{ stock.currentPrice }}</td>
-                <td>{{ stock.totalValue }}</td>
+                <td>{{ stock.currentPrice | round(2) }}</td>
+                <td>{{ stock.totalValue | round(2) }}</td>
             </tr>
         {% endfor %}
     </table>
     <p>CASH -- VALUE OF STOCKS -- REVENUE</p>
-    <p>{{current_user.cash}} -- {{current_user.value}} -- {{current_user.revenue}}</p>
+    <p>{{current_user.cash | round(2)}} -- {{current_user.value | round(2)}} -- {{current_user.revenue | round(2)}}</p>
 {% endif %}
 {% endblock %}

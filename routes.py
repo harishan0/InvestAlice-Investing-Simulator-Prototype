@@ -13,6 +13,8 @@ import yfinance as yf
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
+import pytz
+
 admin = Admin(app, name='Admin-dashboard', template_mode='bootstrap3')
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Stock, db.session))
@@ -23,7 +25,8 @@ scheduler = BackgroundScheduler()
 # schedule database updates every 30s
 # we need to update currentPrice for every single stock in the users portfolio
 # after updating all the stocks, we need to recalculate the users portfolio value and their revenue 
-def update_data(user_id): 
+def update_data(): 
+    user_id = current_user.id
     with app.app_context():
         try:  
             stocks = Stock.query.filter_by(user_id = user_id).all()
@@ -42,17 +45,11 @@ def update_data(user_id):
             print(f'an error occured {e}')
 
 
-
-@app.before_request
-def start_scheduler(): 
-    app.before_request_funcs[None].remove(start_scheduler)
-    scheduler.add_job(func=update_data, trigger='interval', seconds=30, args=[current_user.id]) 
-    scheduler.start()
-
 @app.route('/')
 def home(): 
     portfolio = None
     if current_user.is_authenticated: 
+        update_data()
         portfolio = Stock.query.filter_by(user_id = current_user.id)
     return render_template('index.html', portfolio=portfolio)
 
@@ -93,6 +90,7 @@ def register():
             new_user = User(username=form.username.data, password=hashed_password)
             db.session.add(new_user)
             db.session.commit()
+            login_user(new_user)
             return redirect(url_for('home'))
         else: 
             flash('Not a unique username! Please pick a new username')
@@ -128,6 +126,7 @@ def search_stock():
 # buying
 @app.route('/buy-stock', methods=['GET', 'POST'])
 def buystock(): 
+    update_data()
     stock_price = request.args.get('stock_price')
     ticker = request.args.get('ticker')
     current_share = Stock.query.filter_by(stock=ticker).first()
@@ -171,6 +170,7 @@ def buystock():
 # selling
 @app.route('/sell-stock', methods=['GET', 'POST'])
 def sellstock():
+    update_data()
     form = SharesForm()
     stock_price = request.args.get('stock_price')
     ticker = request.args.get('ticker')
@@ -215,5 +215,9 @@ def sellstock():
 def transaction_history(): 
     history = None
     if current_user.is_authenticated: 
+        update_data()
+        timezone = request.cookies.get('timezone', 'UTC')
         history = Transaction.query.filter_by(user_id = current_user.id)
+        for stock in history: 
+            stock.date = stock.date.astimezone(pytz.timezone(timezone))
     return render_template('transaction-history.html', history=history)

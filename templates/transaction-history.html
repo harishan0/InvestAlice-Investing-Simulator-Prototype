@@ -17,8 +17,8 @@
                 <td>{{ transaction.stock }}</td>
                 <td>{{ transaction.price }}</td>
                 <td>{{ transaction.shares }}</td>
-                <td>{{ transaction.revenue }}</td>
-                <td>{{ transaction.date }}</td>
+                <td>{{ transaction.revenue | round(2)}}</td>
+                <td>{{ transaction.date.strftime('%B %d, %Y - %I:%M%p') }}</td>
             </tr>
         {% endfor %}
     </table>
