@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Register</h1>
-<form action="" method='POST'>
-    {{ form.hidden_tag() }}
-    {{ form.username }}
-    {{ form.password }}
-    {{ form.submit }}
-</form>
-<a href="{{url_for('login')}}">Already have an account? Login Now</a>
+<div class="login-form">
+    <h1>Register</h1>
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.username(class_='form-control') }}
+        {{ form.password(class_='form-control') }}
+        {{ form.submit(class_='btn btn-primary') }}
+    </form>
+    <a href="{{ url_for('login') }}">Already have an account? Login Now</a>
+</div>
 {% endblock content %}

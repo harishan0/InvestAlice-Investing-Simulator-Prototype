@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var timezone = intl.DateTimeFormat().resolvedOptions().timeZone; 
-            document.cookie - 'timezone=' + timezone; 
+            var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; 
+            document.cookie = 'timezone=' + timezone; 
         });
     </script>
     {% block head %}
@@ -15,22 +15,27 @@
     {% endblock %}
 </head>
 <body>
-    <div name='header'>
-        <a href="{{ url_for('home')}}">Home</a>
-        {% if current_user.is_authenticated %}
-            <a href="{{url_for('logout')}}">Logout</a>
-            <a href="{{ url_for('transaction_history')}}">Transaction History</a>
-        {% else %}
-            <a href="{{ url_for('login')}}">Login</a>
-            <a href="{{ url_for('register')}}">Register</a>
-        {% endif %}
-    </div>
+    <header name="header">
+        <div class="logo">
+            <p>InvestAlice Simulator</p>
+        </div>
+        <nav>
+            <a href="{{ url_for('home')}}">Home</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{url_for('logout')}}">Logout</a>
+                <a href="{{ url_for('transaction_history')}}">Transaction History</a>
+            {% else %}
+                <a href="{{ url_for('login')}}">Login</a>
+                <a href="{{ url_for('register')}}">Register</a>
+            {% endif %}
+        </nav>
+    </header>
     {% if current_user.is_authenticated %}
         <h1>Search for Stocks here</h1>
-        <form action="{{ url_for('search_stock') }}" method='POST'>
+        <form class="search-form" action="{{ url_for('search_stock') }}" method="POST">
             <label for="stock_symbol">Stock Symbol: </label>
-            <input type="text" id='stock_symbol' name='stock_symbol' required>
-            <button type='submit'>Search</button>
+            <input type="text" id="stock_symbol" name="stock_symbol" required>
+            <button type="submit">Search</button>
         </form>
     {% endif %}
     

@@ -4,30 +4,57 @@
 
 {% endblock %}
 
-
-
 {% block content %}
 {% if current_user.is_authenticated %}
-    <h1>Hello {{ current_user.username }} you are logged in</h1>
+    <h1>Hello {{ current_user.username }}, you are logged in</h1>
     
-    <p>Here is your portfolio</p>
-    <table>
-        <tr>
-            <th>STOCK</th>
-            <th>SHARES</th>
-            <th>PRICE</th>
-            <th>REVENUE</th>
-        </tr>
-        {% for stock in portfolio %}
+    <h2>Here is your portfolio:</h2>
+    <table class="portfolio-table">
+        <thead>
             <tr>
-                <td>{{ stock.stock }}</td>
-                <td>{{ stock.shares }}</td>
-                <td>{{ stock.currentPrice | round(2) }}</td>
-                <td>{{ stock.totalValue | round(2) }}</td>
+                <th>STOCK</th>
+                <th>SHARES</th>
+                <th>PRICE</th>
+                <th>REVENUE</th>
             </tr>
-        {% endfor %}
+        </thead>
+        <tbody>
+            {% for stock in portfolio %}
+                <tr>
+                    <td>{{ stock.stock }}</td>
+                    <td>{{ stock.shares }}</td>
+                    <td>{{ stock.currentPrice | round(2) }}</td>
+                    <td>{{ stock.totalValue | round(2) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2"><strong>Cash</strong></td>
+                <td colspan="2">{{ current_user.cash | round(2) }}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Value of Stocks</strong></td>
+                <td colspan="2">{{ current_user.value | round(2) }}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Total Revenue</strong></td>
+                <td colspan="2">{{ current_user.revenue | round(2) }}</td>
+            </tr>
+        </tfoot>
     </table>
-    <p>CASH -- VALUE OF STOCKS -- REVENUE</p>
-    <p>{{current_user.cash | round(2)}} -- {{current_user.value | round(2)}} -- {{current_user.revenue | round(2)}}</p>
+{% else %}
+    <div class="info-container">
+        <h1>Welcome to the InvestAlice Investing Simulator</h1>
+        <p>Learn how to trade stocks in a simulated environment. Our platform allows you to practice buying and selling stocks without any financial risk.</p>
+        <p>Get started today to:</p>
+        <ul>
+            <li>Explore real-time stock data</li>
+            <li>Build and manage your own portfolio</li>
+            <li>Track your performance over time</li>
+            <li>Learn investment strategies</li>
+        </ul>
+        <p>To begin your journey, please <a href="{{ url_for('login') }}">log in</a> or <a href="{{ url_for('register') }}">register</a> for a new account.</p>
+    </div>
 {% endif %}
-{% endblock %}
+{% endblock content %}

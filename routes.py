@@ -117,19 +117,18 @@ def search_stock():
                     'market_cap': info['marketCap']
                 }
             else: 
-                return render_template('search_error.html')
+                return render_template('stock_info.html', stock_info=None)
         except Exception as e: 
-            return render_template('search_error.html')
+            return render_template('stock_info.html', stock_info=None)
         
     return render_template('stock_info.html', stock_info=stock_info)
 
 # buying
 @app.route('/buy-stock', methods=['GET', 'POST'])
 def buystock(): 
-    update_data()
     stock_price = request.args.get('stock_price')
     ticker = request.args.get('ticker')
-    current_share = Stock.query.filter_by(stock=ticker).first()
+    current_share = Stock.query.filter_by(stock=ticker, user_id = current_user.id).first()
     num_shares=0
     if current_share: 
         num_shares = current_share.shares
@@ -137,11 +136,10 @@ def buystock():
     if form.validate_on_submit(): 
         value = float(form.shares.data) * float(stock_price)
         if (float(current_user.cash) - value) < 0: 
-            return render_template('purchaseerror.html')
+            return render_template('buy.html', form=form, price=stock_price, ticker=ticker, num_shares=num_shares, invalid=True)
         else: 
             shares=float(form.shares.data)
             currentPrice=(yf.Ticker(ticker)).info['currentPrice']
-            owner = current_user
             # if user already owns some shares, add more
             if current_share: 
                 current_share.shares += shares
@@ -149,32 +147,31 @@ def buystock():
                 current_share.totalValue = value
             else: 
                 # creating a stock item
-                s = Stock(owner=owner, stock=ticker, shares=shares, currentPrice=currentPrice, totalValue=value)
+                s = Stock(owner=current_user, stock=ticker, shares=shares, currentPrice=currentPrice, totalValue=value)
                 db.session.add(s)
 
             # updating user 
             current_user.cash -= value
-            current_user.value += value
 
             # creating transaction history object 
             type='Buy'
             revenue = -1 * value
             purchasePrice=float(stock_price)
-            t = Transaction(owner=owner, type=type, stock=ticker, shares=shares, price=purchasePrice, revenue=revenue)
+            t = Transaction(owner=current_user, type=type, stock=ticker, shares=shares, price=purchasePrice, revenue=revenue)
             db.session.add(t)
             db.session.commit()
+            update_data()
             return redirect(url_for('home'))
     
-    return render_template('buy.html', form=form, price=stock_price, ticker=ticker, num_shares=num_shares)
+    return render_template('buy.html', form=form, price=stock_price, ticker=ticker, num_shares=num_shares, invalid=False)
 
 # selling
 @app.route('/sell-stock', methods=['GET', 'POST'])
 def sellstock():
-    update_data()
     form = SharesForm()
     stock_price = request.args.get('stock_price')
     ticker = request.args.get('ticker')
-    stock = Stock.query.filter_by(stock=ticker).first()
+    stock = Stock.query.filter_by(stock=ticker, user_id=current_user.id).first()
     current_shares = 0
 
     if stock: 
@@ -188,7 +185,7 @@ def sellstock():
         shares = float(form.shares.data)
         if shares > current_shares: 
             # user wants to sell too many shares    
-            return render_template('purchaseerror.html')
+            return render_template('sell.html', form=form, price=stock_price, ticker=ticker, num_shares=current_shares, invalid=True)
         
         else:
             # update stock values 
@@ -199,7 +196,6 @@ def sellstock():
                 db.session.delete(stock)
             # update user values 
             current_user.cash += value
-            current_user.value -= value
             # create transaction 
             type='sell'
             price=float(stock_price)
@@ -207,9 +203,10 @@ def sellstock():
             t=Transaction(owner=current_user, type=type, stock=ticker, price=price, shares=shares, revenue=revenue)
             db.session.add(t)
             db.session.commit()
+            update_data()
             return redirect(url_for('home'))
         
-    return render_template('sell.html', form=form, price=stock_price, ticker=ticker, num_shares=current_shares)
+    return render_template('sell.html', form=form, price=stock_price, ticker=ticker, num_shares=current_shares, invalid=False)
 
 @app.route('/transaction-history')
 def transaction_history(): 

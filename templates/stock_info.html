@@ -5,16 +5,24 @@
 {% endblock %}
 
 {% block content %}
-<h1>Stock Information: </h1>
-
 {% if stock_info %}
-    <h2>Stock Information</h2>
-    <p>Symbol: {{ stock_info['symbol'] }}</p>
-    <p>Current Price: {{ stock_info['current_price'] }}</p>
-    <p>52 Week High: {{ stock_info['52_week_high'] }}</p>
-    <p>52 Week Low: {{ stock_info['52_week_low'] }}</p>
-    <p>Market Cap: {{ stock_info['market_cap'] }}</p>
-    <a method='GET' href="{{ url_for('buystock', stock_price=stock_info['current_price'], ticker=stock_info['symbol']) }}">Buy Stock</a>
-    <a method='GET' href="{{ url_for('sellstock', stock_price=stock_info['current_price'], ticker=stock_info['symbol']) }}">Sell Stock</a>
+    <div class="stock-info">
+        <h2>Stock Information</h2>
+        <p>Symbol: <span>{{ stock_info['symbol'] }}</span></p>
+        <p>Current Price: <span>{{ stock_info['current_price'] }}</span></p>
+        <p>52 Week High: <span>{{ stock_info['52_week_high'] }}</span></p>
+        <p>52 Week Low: <span>{{ stock_info['52_week_low'] }}</span></p>
+        <p>Market Cap: <span>{{ stock_info['market_cap'] }}</span></p>
+        <div class="stock-actions">
+            <a class="btn" href="{{ url_for('buystock', stock_price=stock_info['current_price'], ticker=stock_info['symbol']) }}">Buy Stock</a>
+            <a class="btn" href="{{ url_for('sellstock', stock_price=stock_info['current_price'], ticker=stock_info['symbol']) }}">Sell Stock</a>
+        </div>
+    </div>
+{% else %}
+    <div class="error-message">
+        <h2>Stock Not Found</h2>
+        <p>The stock symbol you entered is invalid or not found. Please try searching for another stock symbol.</p>
+        </form>
+    </div>
 {% endif %}
 {% endblock %}

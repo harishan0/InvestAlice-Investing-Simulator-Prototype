@@ -1,14 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Stock Information: </h1>
+<div class="stock-info">
+    <h1>Stock Information:</h1>
+    <p>How much of this stock would you like to sell?</p>
+    <p>{{ ticker }}: {{ price }}</p>
+    <p>Current number of shares: <span id="num-shares">{{ num_shares }}</span></p>
+    <p>Cash available: $<span id="cash-available">{{ current_user.cash | round(2) }}</span></p>
+    
+    {% if invalid %}
+    <div class="error-message">
+        <p>Sale did not go through due to lack of shares.</p>
+    </div>
+    {% endif %}
+    
+    <form action="" method='POST' id="sell-form">
+        {{ form.hidden_tag() }}
+        {{ form.shares(class_='form-control', id='shares-input') }}
+        {{ form.submit(class_='btn btn-primary') }}
+    </form>
+</div>
 
-<p>How much of this stock would you like to sell</p>
-<p>{{ ticker }}: {{ price }}</p>
-<p>Number of shares: {{ num_shares }}</p>
-<form action="" method='POST'>
-    {{ form.hidden_tag() }}
-    {{ form.shares }}
-    {{ form.submit }}
-</form>
+<script>
+    document.getElementById('shares-input').addEventListener('input', function() {
+        var shares = parseFloat(this.value) || 0;
+        var price = parseFloat({{ price }});
+        var initialCash = parseFloat({{ current_user.cash | round(2) }});
+        var initialShares = parseFloat({{ num_shares }});
+        
+        var newCash = initialCash + (shares * price);
+        var newShares = initialShares - shares;
+
+        document.getElementById('cash-available').textContent = newCash.toFixed(2);
+        document.getElementById('num-shares').textContent = newShares;
+    });
+</script>
 {% endblock content %}
