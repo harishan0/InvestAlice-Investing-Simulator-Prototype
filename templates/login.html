@@ -9,5 +9,15 @@
         {{ form.submit(class_='btn btn-primary') }}
     </form>
     <a href="{{ url_for('register') }}">Don't have an account? Register Now</a>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="error-message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 </div>
-{% endblock content %}
+{% endblock %}

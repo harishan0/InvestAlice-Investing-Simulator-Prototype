@@ -65,6 +65,10 @@ def login():
                 if check_password_hash(user.password, form.password.data): 
                     login_user(user)
                     return redirect(url_for('home'))
+                else:
+                    flash('Incorrect password. Please try again.')
+            else:
+                flash('Username not found. Please try again.')
     else: 
         flash('You are already logged in')
         return redirect(url_for('home'))
@@ -81,7 +85,7 @@ def register():
     if current_user.is_authenticated: 
         flash('You are already logged in')
         return redirect(url_for('home'))
-    form=RegisterForm()
+    form = RegisterForm()
     if form.validate_on_submit(): 
         username = form.username.data
         user = User.query.filter_by(username=username).first()
@@ -99,113 +103,111 @@ def register():
     
 # =================================== STOCK BUYING/SELLING/SEARCHING =========================
 
-# searching
 @app.route('/search-stock', methods=['GET', 'POST'])
 def search_stock(): 
     stock_info = None
+    
     if request.method == 'POST': 
         stock_symbol = request.form['stock_symbol'].upper()
+        return redirect(url_for('search_stock', stock_symbol=stock_symbol))
+    
+    stock_symbol = request.args.get('stock_symbol')
+    if stock_symbol:
         stock = yf.Ticker(stock_symbol)
         info = stock.info
         try: 
             if 'symbol' in info and info['symbol'] == stock_symbol.upper(): 
                 stock_info = {
-                    'symbol': stock_symbol, 
-                    'current_price': info['currentPrice'],
-                    '52_week_high': info['fiftyTwoWeekHigh'], 
-                    '52_week_low': info['fiftyTwoWeekLow'], 
-                    'market_cap': info['marketCap']
+                    'symbol': stock_symbol,
+                    'company_name': info.get('shortName', 'N/A'),
+                    'sector': info.get('sector', 'N/A'),
+                    'industry': info.get('industry', 'N/A'),
+                    'current_price': info.get('currentPrice', 'N/A'),
+                    'previous_close': info.get('previousClose', 'N/A'),
+                    'pe_ratio': info.get('trailingPE', 'N/A'),
+                    'dividend_yield': info.get('dividendYield', 'N/A'),
+                    '52_week_high': info.get('fiftyTwoWeekHigh', 'N/A'),
+                    '52_week_low': info.get('fiftyTwoWeekLow', 'N/A'),
                 }
             else: 
-                return render_template('stock_info.html', stock_info=None)
+                stock_info = None
         except Exception as e: 
-            return render_template('stock_info.html', stock_info=None)
-        
+            stock_info = None
+    
     return render_template('stock_info.html', stock_info=stock_info)
 
-# buying
-@app.route('/buy-stock', methods=['GET', 'POST'])
-def buystock(): 
+@app.route('/buy-stock/<ticker>', methods=['GET', 'POST'])
+def buystock(ticker):
     stock_price = request.args.get('stock_price')
-    ticker = request.args.get('ticker')
-    current_share = Stock.query.filter_by(stock=ticker, user_id = current_user.id).first()
-    num_shares=0
-    if current_share: 
+    current_share = Stock.query.filter_by(stock=ticker, user_id=current_user.id).first()
+    num_shares = 0
+    if current_share:
         num_shares = current_share.shares
     form = SharesForm()
-    if form.validate_on_submit(): 
+    if form.validate_on_submit():
         value = float(form.shares.data) * float(stock_price)
-        if (float(current_user.cash) - value) < 0: 
+        if (float(current_user.cash) - value) < 0:
             return render_template('buy.html', form=form, price=stock_price, ticker=ticker, num_shares=num_shares, invalid=True)
-        else: 
-            shares=float(form.shares.data)
-            currentPrice=(yf.Ticker(ticker)).info['currentPrice']
-            # if user already owns some shares, add more
-            if current_share: 
+        else:
+            shares = float(form.shares.data)
+            currentPrice = (yf.Ticker(ticker)).info['currentPrice']
+            if current_share:
                 current_share.shares += shares
                 current_share.currentPrice = currentPrice
                 current_share.totalValue = value
-            else: 
-                # creating a stock item
+            else:
                 s = Stock(owner=current_user, stock=ticker, shares=shares, currentPrice=currentPrice, totalValue=value)
                 db.session.add(s)
 
-            # updating user 
             current_user.cash -= value
 
-            # creating transaction history object 
-            type='Buy'
+            type = 'BUY'
             revenue = -1 * value
-            purchasePrice=float(stock_price)
+            purchasePrice = float(stock_price)
             t = Transaction(owner=current_user, type=type, stock=ticker, shares=shares, price=purchasePrice, revenue=revenue)
             db.session.add(t)
             db.session.commit()
             update_data()
             return redirect(url_for('home'))
-    
+
     return render_template('buy.html', form=form, price=stock_price, ticker=ticker, num_shares=num_shares, invalid=False)
 
-# selling
-@app.route('/sell-stock', methods=['GET', 'POST'])
-def sellstock():
+
+@app.route('/sell-stock/<ticker>', methods=['GET', 'POST'])
+def sellstock(ticker):
     form = SharesForm()
     stock_price = request.args.get('stock_price')
-    ticker = request.args.get('ticker')
     stock = Stock.query.filter_by(stock=ticker, user_id=current_user.id).first()
     current_shares = 0
 
-    if stock: 
+    if stock:
         current_shares = int(stock.shares)
-    
-    if form.validate_on_submit(): 
-        # user doesn't own any shares of stock
-        if not stock: 
+
+    if form.validate_on_submit():
+        if not stock:
             return render_template('purchaseerror.html')
-        
+
         shares = float(form.shares.data)
-        if shares > current_shares: 
-            # user wants to sell too many shares    
+        if shares > current_shares:
             return render_template('sell.html', form=form, price=stock_price, ticker=ticker, num_shares=current_shares, invalid=True)
-        
+
         else:
-            # update stock values 
             value = shares * float(stock_price)
             stock.shares -= shares
             stock.totalValue = stock.shares * stock.currentPrice
-            if stock.shares == 0: 
+            if stock.shares == 0:
                 db.session.delete(stock)
-            # update user values 
             current_user.cash += value
-            # create transaction 
-            type='sell'
-            price=float(stock_price)
-            revenue=value
-            t=Transaction(owner=current_user, type=type, stock=ticker, price=price, shares=shares, revenue=revenue)
+
+            type = 'SELL'
+            price = float(stock_price)
+            revenue = value
+            t = Transaction(owner=current_user, type=type, stock=ticker, price=price, shares=shares, revenue=revenue)
             db.session.add(t)
             db.session.commit()
             update_data()
             return redirect(url_for('home'))
-        
+
     return render_template('sell.html', form=form, price=stock_price, ticker=ticker, num_shares=current_shares, invalid=False)
 
 @app.route('/transaction-history')

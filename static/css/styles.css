@@ -7,6 +7,38 @@ body {
   color: #333;
 }
 
+/* Button Styles */
+.btn-primary,
+.btn-buy,
+.btn-sell,
+.btn-back {
+  background-color: #27ae60;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 5px;
+}
+
+.btn-primary:hover,
+.btn-buy:hover,
+.btn-sell:hover,
+.btn-back:hover {
+  background-color: #2ecc71;
+}
+
+.stock-info .btn-back {
+  background-color: #3498db;
+}
+
+.stock-info .btn-back:hover {
+  background-color: #2980b9;
+}
+
 header {
   background-color: #2c3e50;
   padding: 10px 0;
@@ -42,7 +74,6 @@ nav a {
 nav a:hover {
   text-decoration: underline;
 }
-
 
 /* Main Content */
 h1 {
@@ -162,11 +193,8 @@ p {
   text-align: center;
 }
 
-.error-message h2 {
-  color: #c0392b;
-}
-
 .error-message p {
+  color: #c0392b;
   font-size: 1.2em;
   margin: 10px 0;
 }
@@ -245,7 +273,7 @@ tfoot tr:first-child td {
   background-color: #2ecc71;
 }
 
-* Login Form Styles */
+/* Login Form Styles */
 .login-form {
   width: 50%;
   margin: 50px auto;
@@ -302,26 +330,26 @@ tfoot tr:first-child td {
 /* Responsive Design */
 @media (max-width: 600px) {
   header {
-      flex-direction: column;
-      align-items: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .logo {
-      position: static;
-      margin: 0 0 10px 0;
+    position: static;
+    margin: 0 0 10px 0;
   }
 
   nav a {
-      display: block;
-      margin: 10px 0;
+    display: block;
+    margin: 10px 0;
   }
 
   .search-form {
-      width: 90%;
+    width: 90%;
   }
 
   .search-form input[type="text"] {
-      width: 100%;
+    width: 100%;
   }
 
   .login-form {

@@ -4,7 +4,7 @@
 <div class="stock-info">
     <h1>Stock Information:</h1>
     <p>How much of this stock would you like to buy?</p>
-    <p>{{ ticker }}: {{ price }}</p>
+    <p>{{ ticker }}: ${{ price }}</p>
     <p>Current number of shares: <span id="num-shares">{{ num_shares }}</span></p>
     <p>Cash available: $<span id="cash-available">{{ current_user.cash | round(2) }}</span></p>
     
@@ -17,7 +17,7 @@
     <form action="" method='POST' id="buy-form">
         {{ form.hidden_tag() }}
         {{ form.shares(class_='form-control', id='shares-input') }}
-        {{ form.submit(class_='btn btn-primary') }}
+        {{ form.submit(class_='btn btn-primary btn-buy') }}
     </form>
 </div>
 

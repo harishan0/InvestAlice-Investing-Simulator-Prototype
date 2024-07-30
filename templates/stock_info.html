@@ -1,28 +1,28 @@
 {% extends "base.html" %}
 
-{% block head %}
-
-{% endblock %}
-
 {% block content %}
 {% if stock_info %}
     <div class="stock-info">
         <h2>Stock Information</h2>
         <p>Symbol: <span>{{ stock_info['symbol'] }}</span></p>
-        <p>Current Price: <span>{{ stock_info['current_price'] }}</span></p>
-        <p>52 Week High: <span>{{ stock_info['52_week_high'] }}</span></p>
-        <p>52 Week Low: <span>{{ stock_info['52_week_low'] }}</span></p>
-        <p>Market Cap: <span>{{ stock_info['market_cap'] }}</span></p>
+        <p>Company Name: <span>{{ stock_info['company_name'] }}</span></p>
+        <p>Sector: <span>{{ stock_info['sector'] }}</span></p>
+        <p>Industry: <span>{{ stock_info['industry'] }}</span></p>
+        <p>Current Price: <span>${{ stock_info['current_price'] }}</span></p>
+        <p>Previous Close: <span>${{ stock_info['previous_close'] }}</span></p>
+        <p>PE Ratio: <span>{{ stock_info['pe_ratio'] }}</span></p>
+        <p>Dividend Yield: <span>{{ stock_info['dividend_yield'] }}</span></p>
+        <p>52 Week High: <span>${{ stock_info['52_week_high'] }}</span></p>
+        <p>52 Week Low: <span>${{ stock_info['52_week_low'] }}</span></p>
         <div class="stock-actions">
-            <a class="btn" href="{{ url_for('buystock', stock_price=stock_info['current_price'], ticker=stock_info['symbol']) }}">Buy Stock</a>
-            <a class="btn" href="{{ url_for('sellstock', stock_price=stock_info['current_price'], ticker=stock_info['symbol']) }}">Sell Stock</a>
+            <a class="btn btn-buy" href="{{ url_for('buystock', ticker=stock_info['symbol'], stock_price=stock_info['current_price']) }}">Buy Stock</a>
+            <a class="btn btn-sell" href="{{ url_for('sellstock', ticker=stock_info['symbol'], stock_price=stock_info['current_price']) }}">Sell Stock</a>
         </div>
     </div>
 {% else %}
     <div class="error-message">
         <h2>Stock Not Found</h2>
         <p>The stock symbol you entered is invalid or not found. Please try searching for another stock symbol.</p>
-        </form>
     </div>
 {% endif %}
 {% endblock %}

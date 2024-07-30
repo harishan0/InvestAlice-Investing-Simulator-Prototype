@@ -19,27 +19,43 @@
             </tr>
         </thead>
         <tbody>
+            {% if portfolio.count() == 0 %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            {% else %}
             {% for stock in portfolio %}
                 <tr>
                     <td>{{ stock.stock }}</td>
                     <td>{{ stock.shares }}</td>
-                    <td>{{ stock.currentPrice | round(2) }}</td>
-                    <td>{{ stock.totalValue | round(2) }}</td>
+                    <td>${{ stock.currentPrice | round(2) }}</td>
+                    <td>${{ stock.totalValue | round(2) }}</td>
                 </tr>
             {% endfor %}
+            {% endif %}
+            
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="2"><strong>Cash</strong></td>
-                <td colspan="2">{{ current_user.cash | round(2) }}</td>
+                <td colspan="2">${{ current_user.cash | round(2) }}</td>
             </tr>
             <tr>
                 <td colspan="2"><strong>Value of Stocks</strong></td>
-                <td colspan="2">{{ current_user.value | round(2) }}</td>
+                <td colspan="2">${{ current_user.value | round(2) }}</td>
             </tr>
             <tr>
                 <td colspan="2"><strong>Total Revenue</strong></td>
-                <td colspan="2">{{ current_user.revenue | round(2) }}</td>
+                <td colspan="2">${{ current_user.revenue | round(2) }}</td>
             </tr>
         </tfoot>
     </table>
