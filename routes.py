@@ -11,16 +11,12 @@ from flask_admin.contrib.sqla import ModelView
 
 import yfinance as yf
 
-from apscheduler.schedulers.background import BackgroundScheduler
-
 import pytz
 
 admin = Admin(app, name='Admin-dashboard', template_mode='bootstrap3')
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Stock, db.session))
 admin.add_view(ModelView(Transaction, db.session))
-
-scheduler = BackgroundScheduler()
 
 # schedule database updates every 30s
 # we need to update currentPrice for every single stock in the users portfolio
